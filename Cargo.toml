@@ -1,0 +1,31 @@
+[package]
+name = "kv_store"
+version = "0.1.0"
+edition = "2018"
+
+description = "A simple multi-threaded hash table implementation."
+
+[dependencies]
+# Add your dependencies here.
+# For the integration test and microbenchmarks, we'll include the following:
+criterion = "0.3.4"
+rand = "0.8.5"
+
+[[bench]]
+name = "bench"
+harness = false
+
+[dev-dependencies]
+# Add any development dependencies here.
+
+[workspace]
+# This section allows you to define a workspace if you have multiple crates in your project.
+# If your project only contains a single crate, you can remove this section.
+
+[profile.dev]
+# Adjust these settings for development builds.
+opt-level = 1
+
+[profile.release]
+# Adjust these settings for release builds.
+opt-level = 3
