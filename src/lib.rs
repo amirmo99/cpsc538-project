@@ -35,8 +35,6 @@ impl KVS
         key.hash(&mut hasher);
         let bin_index = (hasher.finish() % KVS::NUM_BINS as u64) as usize;
 
-        // Resize if needed
-        
         // Add the pair
         let locked = self.buckets.read().unwrap();
         let bucket = locked.get(bin_index).unwrap();
@@ -45,26 +43,56 @@ impl KVS
         
     }
 
-    fn resize_if_needed(&self, index: usize) {
-        todo!()
-    }
-
     pub fn get(&self, key: &str) -> Option<String> {
         // TODO: complete the get function here...
         // If the key exists, return the value wrapped in an Option, otherwise return None.
-        todo!()
+
+        // Finding the hash
+        let mut hasher = DefaultHasher::new();
+        key.hash(&mut hasher);
+        let bin_index = (hasher.finish() % KVS::NUM_BINS as u64) as usize;
+
+        let locked = self.buckets.read().unwrap();
+        let bucket = locked.get(bin_index).unwrap();
+
+        let pair = bucket.get(&Pair::new(key.to_string(), "".to_string()));
+        match pair {
+            Some(p) => Some(p.get_value().clone()),
+            None => None
+        }
     }
 
     pub fn delete(&self, key: &str) {
         // TODO: complete the delete function here...
-        todo!()
+
+        // Finding the hash
+        let mut hasher = DefaultHasher::new();
+        key.hash(&mut hasher);
+        let bin_index = (hasher.finish() % KVS::NUM_BINS as u64) as usize;
+
+        let locked = self.buckets.read().unwrap();
+        let bucket = locked.get(bin_index).unwrap();
+
+        bucket.remove(&Pair::new(key.to_string(), "".to_string()));
     }
 
     pub fn inner_table(&self) -> HashMap<String, String> {
         // TODO: complete the inner_table function here...
         // This will be only used for testing and debugging purposes.
         // It should convert and return the internal data as a standard hash map.
-        todo!()
+        let mut out = HashMap::new();
+
+        for i in 0..KVS::NUM_BINS {
+            let locked = self.buckets.read().unwrap();
+            let bucket = locked.get(i).unwrap();
+
+            let all = bucket.get_all_as_vec();
+            for pair in all {
+                out.insert(pair.get_key().clone(), pair.get_value().clone());
+            }
+        }
+
+        out
     }
 }
 
@@ -73,23 +101,32 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_list() {
-        let list = SyncLinkedList::new(10);
-        
-        for i in 0..1000 {
-            list.push(i);
+    fn test_linked_list() {
+        let m = 20;
+
+        // Test with Pair
+        let list: SyncLinkedList<Pair<String, String>> = SyncLinkedList::new(10);
+        for i in 0..m {
+            list.push(Pair::new(i.to_string(), format!("value_{}", i)));
         }
 
         let all = list.get_all_as_vec();
-        println!("** All: {:?}, \n**len={}", all, all.len());
-    }
-    #[test]
-    fn test_other_file() {
-        let mut x = Pair::new(10, 20);
+        // println!("** All: {:?}, \n**len={}", all, all.len());
+        assert_eq!(all.len(), m);
 
-        let u = x.get_key();
-        x.update_value(56);
+        list.push(Pair::new("ABC".to_string(), "000".to_string()));
+        println!("Value before: {:?}", list.get(&Pair::new("ABC".to_string(), "".to_string())));
+
+        list.push(Pair::new("ABC".to_string(), "777".to_string()));
+        println!("Value after: {:?}", list.get(&Pair::new("ABC".to_string(), "".to_string())));
+
+        // println!("** All: {:?}", list.get_all_as_vec());
+        
+        list.remove(&Pair::new("ABC".to_string(), "".to_string()));
+        println!("Value removed: {:?}", list.get(&Pair::new("ABC".to_string(), "".to_string())));
+
     }
+    
 
     #[test]
     fn test_put_and_get() {

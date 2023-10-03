@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct Pair<K, V> {
     key: K,
     value: V
@@ -15,8 +16,8 @@ impl<K, V> Pair<K, V> {
         return &self.key
     }
 
-    pub fn update_value(&mut self, val: V) {
-        self.value = val
+    pub fn get_value(&self) -> &V {
+        return &self.value
     }
 }
 
@@ -39,3 +40,4 @@ impl<K, V> PartialEq for Pair<K, V> where
         self.key.eq(&other.key)
     }
 }
+
