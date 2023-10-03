@@ -2,7 +2,7 @@
 
 ## Key-Value Store
 
-## Compilation and Testing Instructions
+### Compilation and Testing Instructions
 Inside this `starter_code_xxx` directory:
 - Compilation
   - `cargo build`
