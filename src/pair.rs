@@ -19,6 +19,10 @@ impl<K, V> Pair<K, V> {
     pub fn get_value(&self) -> &V {
         return &self.value
     }
+
+    pub fn update_value(&mut self, value: V) {
+        self.value = value;
+    }
 }
 
 impl<K, V> Clone for Pair<K, V> where 
@@ -40,4 +44,3 @@ impl<K, V> PartialEq for Pair<K, V> where
         self.key.eq(&other.key)
     }
 }
-

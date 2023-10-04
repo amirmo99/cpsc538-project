@@ -50,7 +50,6 @@ impl<T> SyncLinkedList<T> where
                 *next = Some(Box::new(SyncLinkedList::new(self.max_size.clone())));
             }
             next_ref = next.as_ref();
-            // drop(next);
         }
 
         next_ref.unwrap().push(item.clone());
